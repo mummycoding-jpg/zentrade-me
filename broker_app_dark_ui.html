@@ -1,0 +1,282 @@
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f0f; color: #fff; font-family: var(--font-sans); }
+.app { display: flex; height: 100vh; min-height: 600px; background: #0f0f0f; border-radius: 12px; overflow: hidden; border: 0.5px solid #222; }
+.sidebar { width: 64px; background: #141414; display: flex; flex-direction: column; align-items: center; padding: 16px 0; gap: 8px; border-right: 0.5px solid #222; }
+.nav-item { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #666; transition: all 0.15s; }
+.nav-item.active { background: #00c98515; color: #00c985; }
+.nav-item:hover { background: #1a1a1a; color: #fff; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { padding: 14px 20px; border-bottom: 0.5px solid #222; display: flex; align-items: center; justify-content: space-between; background: #141414; }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.logo { font-size: 16px; font-weight: 500; color: #00c985; }
+.search { background: #1a1a1a; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 7px 14px; font-size: 13px; color: #aaa; width: 200px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.balance { font-size: 13px; color: #aaa; }
+.balance span { color: #fff; font-weight: 500; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: #00c98530; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #00c985; font-weight: 500; }
+.content { flex: 1; display: flex; overflow: hidden; }
+.left-panel { flex: 1; padding: 16px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+.right-panel { width: 280px; border-left: 0.5px solid #222; background: #141414; display: flex; flex-direction: column; }
+.section-title { font-size: 13px; font-weight: 500; color: #aaa; margin-bottom: 10px; letter-spacing: 0.5px; }
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.metric-card { background: #141414; border: 0.5px solid #222; border-radius: 10px; padding: 12px; }
+.metric-label { font-size: 11px; color: #666; margin-bottom: 6px; }
+.metric-value { font-size: 18px; font-weight: 500; color: #fff; }
+.metric-change { font-size: 11px; margin-top: 4px; }
+.up { color: #00c985; }
+.down { color: #ff4d4d; }
+.chart-area { background: #141414; border: 0.5px solid #222; border-radius: 10px; padding: 14px; }
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.chart-title { font-size: 14px; font-weight: 500; }
+.chart-tabs { display: flex; gap: 4px; }
+.tab { padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; color: #666; }
+.tab.active { background: #00c98520; color: #00c985; }
+.mini-chart { height: 100px; display: flex; align-items: flex-end; gap: 3px; padding-top: 10px; }
+.bar { flex: 1; border-radius: 3px 3px 0 0; background: #00c98540; transition: height 0.3s; cursor: pointer; }
+.bar:hover { background: #00c985; }
+.bar.highlighted { background: #00c985; }
+.portfolio-list { display: flex; flex-direction: column; gap: 8px; }
+.stock-row { background: #141414; border: 0.5px solid #222; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s; }
+.stock-row:hover { border-color: #333; }
+.stock-left { display: flex; align-items: center; gap: 10px; }
+.stock-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; }
+.stock-name { font-size: 13px; font-weight: 500; }
+.stock-qty { font-size: 11px; color: #666; margin-top: 2px; }
+.stock-right { text-align: right; }
+.stock-value { font-size: 13px; font-weight: 500; }
+.stock-pnl { font-size: 11px; margin-top: 2px; }
+.watchlist { flex: 1; overflow-y: auto; }
+.watchlist-header { padding: 14px 16px 10px; border-bottom: 0.5px solid #222; }
+.watchlist-title { font-size: 13px; font-weight: 500; }
+.watch-item { padding: 12px 16px; border-bottom: 0.5px solid #1a1a1a; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.1s; }
+.watch-item:hover { background: #1a1a1a; }
+.watch-name { font-size: 13px; font-weight: 500; }
+.watch-exchange { font-size: 10px; color: #555; margin-top: 1px; }
+.watch-price { text-align: right; }
+.watch-ltp { font-size: 13px; font-weight: 500; }
+.watch-chg { font-size: 11px; margin-top: 1px; }
+.buy-sell { padding: 12px 16px; border-top: 0.5px solid #222; display: flex; gap: 8px; }
+.btn-buy { flex: 1; padding: 9px; background: #00c98520; color: #00c985; border: 0.5px solid #00c98540; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.btn-sell { flex: 1; padding: 9px; background: #ff4d4d15; color: #ff4d4d; border: 0.5px solid #ff4d4d40; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.screen-tabs { display: flex; border-bottom: 0.5px solid #222; background: #141414; }
+.screen-tab { flex: 1; padding: 12px; text-align: center; font-size: 13px; color: #555; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+.screen-tab.active { color: #00c985; border-bottom-color: #00c985; }
+.indices-bar { display: flex; gap: 16px; padding: 10px 20px; background: #0f0f0f; border-bottom: 0.5px solid #1a1a1a; overflow-x: auto; }
+.index-item { display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+.index-name { font-size: 11px; color: #666; }
+.index-val { font-size: 11px; font-weight: 500; color: #fff; }
+.index-chg { font-size: 10px; }
+</style>
+
+<div class="app">
+  <div class="sidebar">
+    <div style="font-size:20px; color:#00c985; margin-bottom:8px;">Z</div>
+    <div class="nav-item active" title="Dashboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="nav-item" title="Watchlist">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+    <div class="nav-item" title="Portfolio">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <div class="nav-item" title="Orders">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    <div class="nav-item" title="Settings" style="margin-top:auto;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="logo">Zentrade</div>
+        <div class="search">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search stocks, ETFs...
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="balance">Available: <span>₹1,24,500</span></div>
+        <div class="avatar">AK</div>
+      </div>
+    </div>
+
+    <div class="indices-bar">
+      <div class="index-item"><span class="index-name">NIFTY 50</span><span class="index-val">22,419</span><span class="index-chg up">+0.54%</span></div>
+      <div class="index-item"><span class="index-name">SENSEX</span><span class="index-val">73,852</span><span class="index-chg up">+0.48%</span></div>
+      <div class="index-item"><span class="index-name">BANK NIFTY</span><span class="index-val">48,120</span><span class="index-chg down">-0.21%</span></div>
+      <div class="index-item"><span class="index-name">MIDCAP</span><span class="index-val">41,305</span><span class="index-chg up">+1.12%</span></div>
+      <div class="index-item"><span class="index-name">IT INDEX</span><span class="index-val">33,210</span><span class="index-chg down">-0.33%</span></div>
+    </div>
+
+    <div class="screen-tabs">
+      <div class="screen-tab active" onclick="showScreen('dashboard', this)">Dashboard</div>
+      <div class="screen-tab" onclick="showScreen('portfolio', this)">Portfolio</div>
+      <div class="screen-tab" onclick="showScreen('orders', this)">Orders</div>
+    </div>
+
+    <div class="content">
+      <div class="left-panel" id="main-content">
+        <div>
+          <div class="section-title">OVERVIEW</div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Total invested</div>
+              <div class="metric-value">₹2.4L</div>
+              <div class="metric-change up">+₹18,420 today</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Current value</div>
+              <div class="metric-value">₹3.1L</div>
+              <div class="metric-change up">+29.2% overall</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Total P&L</div>
+              <div class="metric-value" style="color:#00c985">+₹70K</div>
+              <div class="metric-change up">+29.2% returns</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-area">
+          <div class="chart-header">
+            <div class="chart-title">Portfolio performance</div>
+            <div class="chart-tabs">
+              <div class="tab active">1D</div>
+              <div class="tab">1W</div>
+              <div class="tab">1M</div>
+              <div class="tab">1Y</div>
+            </div>
+          </div>
+          <div class="mini-chart" id="chart">
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px;">
+            <span style="font-size:10px; color:#444;">9:15 AM</span>
+            <span style="font-size:10px; color:#444;">3:30 PM</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-title">TOP HOLDINGS</div>
+          <div class="portfolio-list">
+            <div class="stock-row">
+              <div class="stock-left">
+                <div class="stock-icon" style="background:#1a3a5c; color:#378ADD;">TCS</div>
+                <div>
+                  <div class="stock-name">TCS</div>
+                  <div class="stock-qty">5 shares · NSE</div>
+                </div>
+              </div>
+              <div class="stock-right">
+                <div class="stock-value">₹18,650</div>
+                <div class="stock-pnl up">+₹1,240 (7.1%)</div>
+              </div>
+            </div>
+            <div class="stock-row">
+              <div class="stock-left">
+                <div class="stock-icon" style="background:#1a3320; color:#00c985;">INFY</div>
+                <div>
+                  <div class="stock-name">Infosys</div>
+                  <div class="stock-qty">12 shares · NSE</div>
+                </div>
+              </div>
+              <div class="stock-right">
+                <div class="stock-value">₹21,480</div>
+                <div class="stock-pnl up">+₹3,960 (22.6%)</div>
+              </div>
+            </div>
+            <div class="stock-row">
+              <div class="stock-left">
+                <div class="stock-icon" style="background:#3a1a1a; color:#ff4d4d;">HDFC</div>
+                <div>
+                  <div class="stock-name">HDFC Bank</div>
+                  <div class="stock-qty">8 shares · NSE</div>
+                </div>
+              </div>
+              <div class="stock-right">
+                <div class="stock-value">₹12,320</div>
+                <div class="stock-pnl down">-₹480 (-3.7%)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="watchlist-header">
+          <div class="watchlist-title">Watchlist</div>
+        </div>
+        <div class="watchlist">
+          <div class="watch-item" onclick="selectStock('RELIANCE', '2,847.30', '+1.24%', true)">
+            <div><div class="watch-name">RELIANCE</div><div class="watch-exchange">NSE · Energy</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹2,847</div><div class="watch-chg up">+1.24%</div></div>
+          </div>
+          <div class="watch-item" onclick="selectStock('TCS', '3,730.00', '+0.87%', true)">
+            <div><div class="watch-name">TCS</div><div class="watch-exchange">NSE · IT</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹3,730</div><div class="watch-chg up">+0.87%</div></div>
+          </div>
+          <div class="watch-item" onclick="selectStock('HDFCBANK', '1,540.50', '-0.43%', false)">
+            <div><div class="watch-name">HDFCBANK</div><div class="watch-exchange">NSE · Banking</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹1,540</div><div class="watch-chg down">-0.43%</div></div>
+          </div>
+          <div class="watch-item" onclick="selectStock('INFY', '1,790.20', '+2.10%', true)">
+            <div><div class="watch-name">INFY</div><div class="watch-exchange">NSE · IT</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹1,790</div><div class="watch-chg up">+2.10%</div></div>
+          </div>
+          <div class="watch-item" onclick="selectStock('WIPRO', '480.75', '-1.20%', false)">
+            <div><div class="watch-name">WIPRO</div><div class="watch-exchange">NSE · IT</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹480</div><div class="watch-chg down">-1.20%</div></div>
+          </div>
+          <div class="watch-item" onclick="selectStock('BAJFINANCE', '6,920.00', '+0.65%', true)">
+            <div><div class="watch-name">BAJFINANCE</div><div class="watch-exchange">NSE · Finance</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹6,920</div><div class="watch-chg up">+0.65%</div></div>
+          </div>
+          <div class="watch-item" onclick="selectStock('TATAMOTORS', '912.40', '+3.20%', true)">
+            <div><div class="watch-name">TATAMOTORS</div><div class="watch-exchange">NSE · Auto</div></div>
+            <div class="watch-price"><div class="watch-ltp">₹912</div><div class="watch-chg up">+3.20%</div></div>
+          </div>
+        </div>
+        <div id="selected-stock" style="padding:12px 16px; border-top:0.5px solid #222; display:none;">
+          <div style="font-size:11px; color:#666; margin-bottom:4px;" id="sel-name">RELIANCE</div>
+          <div style="font-size:20px; font-weight:500; color:#fff;" id="sel-price">₹2,847</div>
+          <div style="font-size:12px; margin-top:2px;" id="sel-chg"></div>
+        </div>
+        <div class="buy-sell">
+          <button class="btn-buy" onclick="sendPrompt('How do I implement the Buy order flow for the broker app?')">Buy</button>
+          <button class="btn-sell" onclick="sendPrompt('How do I implement the Sell order flow for the broker app?')">Sell</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const bars = [40,55,45,60,52,70,65,80,72,85,78,90,82,95,88,100,92,85,88,92,96,90,94,98];
+const chart = document.getElementById('chart');
+bars.forEach((h, i) => {
+  const bar = document.createElement('div');
+  bar.className = 'bar' + (i === bars.length-1 ? ' highlighted' : '');
+  bar.style.height = h + '%';
+  chart.appendChild(bar);
+});
+
+function showScreen(screen, el) {
+  document.querySelectorAll('.screen-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  sendPrompt('Show me how to build the ' + screen + ' screen for my broker app');
+}
+
+function selectStock(name, price, chg, isUp) {
+  const el = document.getElementById('selected-stock');
+  el.style.display = 'block';
+  document.getElementById('sel-name').textContent = name;
+  document.getElementById('sel-price').textContent = '₹' + price;
+  const chgEl = document.getElementById('sel-chg');
+  chgEl.textContent = chg;
+  chgEl.style.color = isUp ? '#00c985' : '#ff4d4d';
+}
+</script>

@@ -1,0 +1,210 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+.wrap{background:#0f0f0f;border-radius:12px;border:0.5px solid #222;font-family:var(--font-sans);color:#fff;overflow:hidden;}
+.header{padding:14px 20px;border-bottom:0.5px solid #222;display:flex;align-items:center;justify-content:space-between;}
+.title{font-size:15px;font-weight:500;}
+.period-tabs{display:flex;gap:4px;}
+.pt{padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;color:#555;border:none;background:none;}
+.pt.active{background:#00c98520;color:#00c985;}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#1a1a1a;border-bottom:0.5px solid #1a1a1a;}
+.metric{background:#0f0f0f;padding:12px 16px;}
+.ml{font-size:10px;color:#555;margin-bottom:4px;}
+.mv{font-size:16px;font-weight:500;}
+.mc{font-size:11px;margin-top:2px;}
+.up{color:#00c985;}
+.dn{color:#ff4d4d;}
+.section{padding:14px 20px;border-bottom:0.5px solid #1a1a1a;}
+.section-title{font-size:11px;color:#555;margin-bottom:12px;letter-spacing:0.5px;}
+.donut-row{display:flex;align-items:center;gap:20px;}
+.donut-wrap{position:relative;width:130px;height:130px;flex-shrink:0;}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.dc-val{font-size:15px;font-weight:500;}
+.dc-label{font-size:10px;color:#555;margin-top:2px;}
+.legend{display:flex;flex-direction:column;gap:8px;flex:1;}
+.legend-item{display:flex;align-items:center;justify-content:space-between;}
+.legend-left{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.legend-name{font-size:12px;color:#aaa;}
+.legend-right{text-align:right;}
+.legend-pct{font-size:12px;font-weight:500;}
+.legend-val{font-size:10px;color:#555;}
+.bar-section{display:flex;flex-direction:column;gap:8px;}
+.bar-item{display:flex;flex-direction:column;gap:4px;}
+.bar-header{display:flex;justify-content:space-between;align-items:center;}
+.bar-name{font-size:12px;color:#aaa;}
+.bar-meta{font-size:11px;color:#555;}
+.bar-track{height:4px;background:#1a1a1a;border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width 0.5s;}
+.holdings{display:flex;flex-direction:column;gap:0;}
+.holding-row{padding:12px 20px;border-bottom:0.5px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background 0.1s;}
+.holding-row:hover{background:#141414;}
+.h-left{display:flex;align-items:center;gap:10px;}
+.h-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;}
+.h-name{font-size:13px;font-weight:500;}
+.h-qty{font-size:11px;color:#555;margin-top:1px;}
+.h-right{text-align:right;}
+.h-val{font-size:13px;font-weight:500;}
+.h-pnl{font-size:11px;margin-top:1px;}
+.h-pct{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500;margin-left:4px;}
+.sort-bar{display:flex;gap:6px;padding:10px 20px;border-bottom:0.5px solid #1a1a1a;}
+.sort-chip{padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:0.5px solid #2a2a2a;background:#141414;color:#555;}
+.sort-chip.active{border-color:#378ADD;color:#378ADD;background:#378ADD15;}
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="title">Portfolio</div>
+    <div class="period-tabs">
+      <div class="pt active" onclick="setPeriod('1D',this)">1D</div>
+      <div class="pt" onclick="setPeriod('1W',this)">1W</div>
+      <div class="pt" onclick="setPeriod('1M',this)">1M</div>
+      <div class="pt" onclick="setPeriod('1Y',this)">1Y</div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="ml">Invested</div><div class="mv">₹2.41L</div><div class="mc" style="color:#555;">6 stocks</div></div>
+    <div class="metric"><div class="ml">Current value</div><div class="mv">₹3.12L</div><div class="mc up">+₹71,200</div></div>
+    <div class="metric"><div class="ml">Day's P&L</div><div class="mv up">+₹4,820</div><div class="mc up">+1.57%</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">ALLOCATION BY SECTOR</div>
+    <div class="donut-row">
+      <div class="donut-wrap">
+        <canvas id="donutChart" width="130" height="130" role="img" aria-label="Donut chart showing portfolio allocation: IT 42%, Banking 22%, Energy 18%, Auto 10%, Finance 8%">Portfolio sector allocation chart.</canvas>
+        <div class="donut-center">
+          <div class="dc-val">₹3.12L</div>
+          <div class="dc-label">Total value</div>
+        </div>
+      </div>
+      <div class="legend" id="sector-legend"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">PERFORMANCE BY SECTOR</div>
+    <div class="bar-section" id="perf-bars"></div>
+  </div>
+
+  <div class="sort-bar">
+    <div class="sort-chip active" onclick="setSort('value',this)">By value</div>
+    <div class="sort-chip" onclick="setSort('pnl',this)">By P&L</div>
+    <div class="sort-chip" onclick="setSort('pct',this)">By returns</div>
+    <div class="sort-chip" onclick="setSort('name',this)">A-Z</div>
+  </div>
+
+  <div class="holdings" id="holdings-list"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const sectors = [
+  {name:'IT',pct:42,color:'#378ADD',perf:8.2},
+  {name:'Banking',pct:22,color:'#00c985',perf:-1.4},
+  {name:'Energy',pct:18,color:'#EF9F27',perf:5.6},
+  {name:'Auto',pct:10,color:'#7F77DD',perf:12.1},
+  {name:'Finance',pct:8,color:'#D4537E',perf:3.8},
+];
+
+const holdings = [
+  {symbol:'TCS',name:'Tata Consultancy',sector:'IT',qty:5,avg:3543,ltp:3730,icon:'#1a3a5c',iconColor:'#378ADD'},
+  {symbol:'INFY',name:'Infosys',sector:'IT',qty:12,avg:1462,ltp:1790,icon:'#1a3320',iconColor:'#00c985'},
+  {symbol:'RELIANCE',name:'Reliance Ind.',sector:'Energy',qty:3,avg:2690,ltp:2847,icon:'#2a1a00',iconColor:'#EF9F27'},
+  {symbol:'HDFCBANK',name:'HDFC Bank',sector:'Banking',qty:8,avg:1598,ltp:1540,icon:'#3a1a1a',iconColor:'#ff4d4d'},
+  {symbol:'TATAMOTORS',name:'Tata Motors',sector:'Auto',qty:15,avg:780,ltp:912,icon:'#1a1a3a',iconColor:'#7F77DD'},
+  {symbol:'BAJFINANCE',name:'Bajaj Finance',sector:'Finance',qty:2,avg:6650,ltp:6920,icon:'#2a1a2a',iconColor:'#D4537E'},
+];
+
+let sort = 'value';
+
+const legend = document.getElementById('sector-legend');
+sectors.forEach(s => {
+  const val = Math.round(312000 * s.pct / 100);
+  legend.innerHTML += `<div class="legend-item">
+    <div class="legend-left"><div class="legend-dot" style="background:${s.color}"></div><div class="legend-name">${s.name}</div></div>
+    <div class="legend-right"><div class="legend-pct">${s.pct}%</div><div class="legend-val">₹${(val/1000).toFixed(1)}K</div></div>
+  </div>`;
+});
+
+const perfBars = document.getElementById('perf-bars');
+sectors.forEach(s => {
+  const isUp = s.perf >= 0;
+  const w = Math.min(100, Math.abs(s.perf) * 5);
+  perfBars.innerHTML += `<div class="bar-item">
+    <div class="bar-header">
+      <span class="bar-name">${s.name}</span>
+      <span class="bar-meta ${isUp?'up':'dn'}">${isUp?'+':''}${s.perf}%</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${isUp?'#00c985':'#ff4d4d'}"></div></div>
+  </div>`;
+});
+
+function renderHoldings() {
+  const sorted = [...holdings].sort((a,b) => {
+    if(sort==='value') return (b.qty*b.ltp)-(a.qty*a.ltp);
+    if(sort==='pnl') return ((b.ltp-b.avg)*b.qty)-((a.ltp-a.avg)*a.qty);
+    if(sort==='pct') return ((b.ltp-b.avg)/b.avg)-((a.ltp-a.avg)/a.avg);
+    if(sort==='name') return a.symbol.localeCompare(b.symbol);
+    return 0;
+  });
+  const list = document.getElementById('holdings-list');
+  list.innerHTML = sorted.map(h => {
+    const val = h.qty * h.ltp;
+    const pnl = (h.ltp - h.avg) * h.qty;
+    const pct = ((h.ltp - h.avg) / h.avg * 100).toFixed(1);
+    const isUp = pnl >= 0;
+    return `<div class="holding-row" onclick="sendPrompt('Show me the stock detail screen for ${h.symbol}')">
+      <div class="h-left">
+        <div class="h-icon" style="background:${h.icon};color:${h.iconColor}">${h.symbol.slice(0,3)}</div>
+        <div>
+          <div class="h-name">${h.symbol}</div>
+          <div class="h-qty">${h.qty} shares · ${h.sector}</div>
+        </div>
+      </div>
+      <div class="h-right">
+        <div class="h-val">₹${val.toLocaleString('en-IN')}</div>
+        <div class="h-pnl ${isUp?'up':'dn'}">${isUp?'+':''}₹${Math.abs(pnl).toLocaleString('en-IN')} <span class="h-pct" style="background:${isUp?'#00c98520':'#ff4d4d15'};color:${isUp?'#00c985':'#ff4d4d'}">${isUp?'+':''}${pct}%</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setSort(s, el) {
+  sort = s;
+  document.querySelectorAll('.sort-chip').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  renderHoldings();
+}
+
+function setPeriod(p, el) {
+  document.querySelectorAll('.pt').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+}
+
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: sectors.map(s=>s.name),
+    datasets: [{
+      data: sectors.map(s=>s.pct),
+      backgroundColor: sectors.map(s=>s.color),
+      borderWidth: 0,
+      hoverOffset: 4,
+    }]
+  },
+  options: {
+    responsive: false,
+    cutout: '72%',
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#1a1a1a',
+      borderColor: '#333', borderWidth: 1,
+      titleColor: '#aaa', bodyColor: '#fff',
+      callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}%` }
+    }}
+  }
+});
+
+renderHoldings();
+</script>

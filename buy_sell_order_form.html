@@ -1,0 +1,214 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+.wrap{background:#0f0f0f;border-radius:12px;border:0.5px solid #222;font-family:var(--font-sans);color:#fff;overflow:hidden;}
+.header{padding:14px 20px;border-bottom:0.5px solid #222;display:flex;align-items:center;justify-content:space-between;}
+.back{color:#555;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.stock-info{text-align:center;}
+.stock-name{font-size:15px;font-weight:500;}
+.stock-price{font-size:12px;color:#00c985;margin-top:2px;}
+.bs-tabs{display:flex;margin:16px 20px 0;background:#141414;border-radius:10px;padding:3px;gap:3px;}
+.bs-tab{flex:1;padding:9px;text-align:center;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:#555;transition:all 0.15s;}
+.bs-tab.buy-active{background:#00c98520;color:#00c985;}
+.bs-tab.sell-active{background:#ff4d4d15;color:#ff4d4d;}
+.form-body{padding:16px 20px;display:flex;flex-direction:column;gap:14px;}
+.field-label{font-size:11px;color:#555;margin-bottom:6px;}
+.order-types{display:flex;gap:6px;}
+.ot{padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;border:0.5px solid #2a2a2a;background:#141414;color:#555;transition:all 0.15s;}
+.ot.active{border-color:#378ADD;color:#378ADD;background:#378ADD15;}
+.input-wrap{position:relative;}
+.input-wrap input{width:100%;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;font-family:var(--font-sans);outline:none;}
+.input-wrap input:focus{border-color:#333;}
+.input-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#555;}
+.input-wrap input.has-prefix{padding-left:26px;}
+.input-suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11px;color:#555;}
+.qty-controls{display:flex;align-items:center;gap:8px;}
+.qty-btn{width:36px;height:36px;border-radius:8px;background:#141414;border:0.5px solid #2a2a2a;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qty-input{flex:1;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;text-align:center;font-family:var(--font-sans);outline:none;}
+.qty-input:focus{border-color:#333;}
+.summary-box{background:#141414;border:0.5px solid #222;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
+.summary-row{display:flex;justify-content:space-between;align-items:center;}
+.summary-label{font-size:12px;color:#555;}
+.summary-value{font-size:12px;color:#aaa;}
+.summary-total{font-size:14px;font-weight:500;color:#fff;}
+.divider{border:none;border-top:0.5px solid #222;margin:2px 0;}
+.margin-info{background:#1a2a1a;border:0.5px solid #00c98530;border-radius:8px;padding:10px 14px;font-size:11px;color:#00c985;}
+.submit-btn{width:100%;padding:14px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;border:none;transition:opacity 0.15s;}
+.submit-btn:active{opacity:0.8;}
+.buy-btn{background:#00c985;color:#000;}
+.sell-btn{background:#ff4d4d;color:#fff;}
+.balance-bar{display:flex;justify-content:space-between;padding:10px 20px;border-top:0.5px solid #1a1a1a;background:#0a0a0a;}
+.bal-label{font-size:11px;color:#555;}
+.bal-value{font-size:11px;color:#aaa;}
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </div>
+    <div class="stock-info">
+      <div class="stock-name">TCS</div>
+      <div class="stock-price" id="live-price">₹3,730.00 +0.87%</div>
+    </div>
+    <div style="width:40px;"></div>
+  </div>
+
+  <div class="bs-tabs">
+    <div class="bs-tab buy-active" id="buy-tab" onclick="setMode('buy')">Buy</div>
+    <div class="bs-tab" id="sell-tab" onclick="setMode('sell')">Sell</div>
+  </div>
+
+  <div class="form-body">
+    <div>
+      <div class="field-label">Order type</div>
+      <div class="order-types">
+        <div class="ot active" onclick="setOrderType('market',this)">Market</div>
+        <div class="ot" onclick="setOrderType('limit',this)">Limit</div>
+        <div class="ot" onclick="setOrderType('sl',this)">SL</div>
+        <div class="ot" onclick="setOrderType('sl-m',this)">SL-M</div>
+      </div>
+    </div>
+
+    <div id="price-field" style="display:none;">
+      <div class="field-label">Price (₹)</div>
+      <div class="input-wrap">
+        <span class="input-prefix">₹</span>
+        <input type="number" class="has-prefix" id="price-input" value="3730" oninput="recalc()" placeholder="Enter price"/>
+      </div>
+    </div>
+
+    <div id="trigger-field" style="display:none;">
+      <div class="field-label">Trigger price (₹)</div>
+      <div class="input-wrap">
+        <span class="input-prefix">₹</span>
+        <input type="number" class="has-prefix" id="trigger-input" value="3720" placeholder="Trigger price"/>
+      </div>
+    </div>
+
+    <div>
+      <div class="field-label">Quantity (shares)</div>
+      <div class="qty-controls">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <input type="number" class="qty-input" id="qty-input" value="5" min="1" oninput="recalc()"/>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="field-label">Product type</div>
+      <div class="order-types">
+        <div class="ot active" onclick="setProd('intraday',this)">Intraday</div>
+        <div class="ot" onclick="setProd('delivery',this)">Delivery</div>
+        <div class="ot" onclick="setProd('mtf',this)">MTF</div>
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-row">
+        <span class="summary-label">Market price</span>
+        <span class="summary-value">₹3,730.00</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Quantity</span>
+        <span class="summary-value" id="s-qty">5 shares</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Brokerage</span>
+        <span class="summary-value" id="s-brok">₹20.00</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Taxes & charges</span>
+        <span class="summary-value" id="s-tax">₹22.50</span>
+      </div>
+      <hr class="divider"/>
+      <div class="summary-row">
+        <span class="summary-label" style="font-size:13px;">Total amount</span>
+        <span class="summary-total" id="s-total">₹18,692.50</span>
+      </div>
+    </div>
+
+    <div class="margin-info" id="margin-info">
+      Margin required for intraday: <strong>₹3,738.50</strong> (20% of order value)
+    </div>
+
+    <button class="submit-btn buy-btn" id="submit-btn" onclick="placeOrder()">Buy TCS · ₹18,692.50</button>
+  </div>
+
+  <div class="balance-bar">
+    <span class="bal-label">Available balance</span>
+    <span class="bal-value">₹1,24,500.00</span>
+  </div>
+</div>
+
+<script>
+let mode = 'buy';
+let orderType = 'market';
+let prodType = 'intraday';
+const mktPrice = 3730;
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('buy-tab').className = 'bs-tab' + (m==='buy' ? ' buy-active' : '');
+  document.getElementById('sell-tab').className = 'bs-tab' + (m==='sell' ? ' sell-active' : '');
+  const btn = document.getElementById('submit-btn');
+  btn.className = 'submit-btn ' + (m==='buy' ? 'buy-btn' : 'sell-btn');
+  recalc();
+}
+
+function setOrderType(t, el) {
+  orderType = t;
+  document.querySelectorAll('.order-types .ot').forEach(e => {
+    if(e.parentElement.children[0] === document.querySelector('.order-types .ot'))
+      e.classList.remove('active');
+  });
+  el.parentElement.querySelectorAll('.ot').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('price-field').style.display = (t==='limit'||t==='sl') ? 'block' : 'none';
+  document.getElementById('trigger-field').style.display = (t==='sl'||t==='sl-m') ? 'block' : 'none';
+  recalc();
+}
+
+function setProd(p, el) {
+  prodType = p;
+  el.parentElement.querySelectorAll('.ot').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  const mi = document.getElementById('margin-info');
+  if(p==='intraday') mi.style.display = 'block';
+  else mi.style.display = 'none';
+  recalc();
+}
+
+function changeQty(d) {
+  const inp = document.getElementById('qty-input');
+  const v = Math.max(1, parseInt(inp.value||1) + d);
+  inp.value = v;
+  recalc();
+}
+
+function recalc() {
+  const qty = Math.max(1, parseInt(document.getElementById('qty-input').value)||1);
+  const price = orderType === 'market' ? mktPrice : (parseFloat(document.getElementById('price-input')?.value)||mktPrice);
+  const orderVal = qty * price;
+  const brok = Math.min(20, orderVal * 0.0003);
+  const tax = orderVal * 0.0012;
+  const total = orderVal + brok + tax;
+  const margin = orderVal * 0.2;
+
+  document.getElementById('s-qty').textContent = qty + ' shares';
+  document.getElementById('s-brok').textContent = '₹' + brok.toFixed(2);
+  document.getElementById('s-tax').textContent = '₹' + tax.toFixed(2);
+  document.getElementById('s-total').textContent = '₹' + total.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('margin-info').innerHTML = 'Margin required for intraday: <strong>₹' + margin.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2}) + '</strong> (20% of order value)';
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = (mode==='buy'?'Buy':'Sell') + ' TCS · ₹' + total.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function placeOrder() {
+  const qty = document.getElementById('qty-input').value;
+  sendPrompt('How do I implement the place order API call for ' + mode + ' ' + qty + ' shares of TCS in my broker app using Upstox API?');
+}
+
+recalc();
+</script>

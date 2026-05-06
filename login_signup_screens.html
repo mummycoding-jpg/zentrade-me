@@ -1,0 +1,243 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+.wrap{background:#0f0f0f;border-radius:12px;border:0.5px solid #222;font-family:var(--font-sans);color:#fff;overflow:hidden;}
+.screen-switch{display:flex;gap:0;border-bottom:0.5px solid #222;}
+.sw{flex:1;padding:10px;text-align:center;font-size:12px;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;background:#0f0f0f;}
+.sw.active{color:#00c985;border-bottom-color:#00c985;}
+.screen{padding:28px 28px 20px;}
+.brand{text-align:center;margin-bottom:28px;}
+.brand-logo{width:48px;height:48px;border-radius:12px;background:#00c98520;border:0.5px solid #00c98540;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.brand-name{font-size:20px;font-weight:500;color:#fff;}
+.brand-tag{font-size:12px;color:#555;margin-top:4px;}
+.screen-title{font-size:18px;font-weight:500;margin-bottom:4px;}
+.screen-sub{font-size:12px;color:#555;margin-bottom:20px;}
+.field{margin-bottom:12px;}
+.field label{font-size:11px;color:#555;display:block;margin-bottom:5px;}
+.inp-wrap{position:relative;}
+.inp{width:100%;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;font-family:var(--font-sans);outline:none;transition:border-color 0.15s;}
+.inp:focus{border-color:#378ADD;}
+.inp.error{border-color:#ff4d4d;}
+.inp-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#555;}
+.err-msg{font-size:11px;color:#ff4d4d;margin-top:4px;}
+.forgot{text-align:right;font-size:12px;color:#378ADD;cursor:pointer;margin-top:-6px;margin-bottom:14px;}
+.divider{display:flex;align-items:center;gap:12px;margin:16px 0;}
+.div-line{flex:1;height:0.5px;background:#222;}
+.div-text{font-size:11px;color:#444;}
+.social-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.social-btn{padding:10px;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;color:#aaa;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color 0.15s;}
+.social-btn:hover{border-color:#333;}
+.submit-btn{width:100%;padding:12px;background:#00c985;border:none;border-radius:10px;color:#000;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:14px;transition:opacity 0.15s;}
+.submit-btn:hover{opacity:0.9;}
+.submit-btn:disabled{background:#1a2a1a;color:#555;cursor:not-allowed;}
+.switch-text{text-align:center;font-size:12px;color:#555;}
+.switch-text span{color:#378ADD;cursor:pointer;}
+.otp-screen{padding:28px;}
+.otp-back{display:flex;align-items:center;gap:6px;color:#555;font-size:13px;cursor:pointer;margin-bottom:20px;}
+.otp-title{font-size:18px;font-weight:500;margin-bottom:6px;}
+.otp-sub{font-size:12px;color:#555;margin-bottom:24px;line-height:1.6;}
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:16px;}
+.otp-inp{width:46px;height:52px;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;text-align:center;font-size:22px;color:#fff;font-family:var(--font-sans);outline:none;}
+.otp-inp:focus{border-color:#378ADD;}
+.otp-inp.filled{border-color:#00c985;color:#00c985;}
+.resend-row{text-align:center;font-size:12px;color:#555;margin-bottom:20px;}
+.resend-row span{color:#378ADD;cursor:pointer;}
+.strength-bar{display:flex;gap:3px;margin-top:6px;}
+.sb{flex:1;height:3px;border-radius:2px;background:#1a1a1a;transition:background 0.3s;}
+.strength-label{font-size:10px;margin-top:4px;}
+.terms{font-size:11px;color:#555;text-align:center;line-height:1.6;margin-bottom:14px;}
+.terms span{color:#378ADD;cursor:pointer;}
+.success-wrap{padding:40px 28px;text-align:center;}
+.success-circle{width:60px;height:60px;border-radius:50%;background:#00c98520;border:0.5px solid #00c98540;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.success-title{font-size:18px;font-weight:500;margin-bottom:8px;}
+.success-sub{font-size:12px;color:#555;line-height:1.6;margin-bottom:24px;}
+</style>
+
+<div class="wrap">
+  <div class="screen-switch">
+    <div class="sw active" onclick="showScreen('login',this)">Sign in</div>
+    <div class="sw" onclick="showScreen('signup',this)">Create account</div>
+    <div class="sw" onclick="showScreen('forgot',this)">Forgot password</div>
+  </div>
+  <div id="screen-body"></div>
+</div>
+
+<script>
+let pwVisible = false;
+let signupStep = 1;
+
+const screens = {
+  login: () => `
+    <div class="screen">
+      <div class="brand">
+        <div class="brand-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00c985" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+        <div class="brand-name">Zentrade</div>
+        <div class="brand-tag">Trade smarter. Invest better.</div>
+      </div>
+      <div class="screen-title">Welcome back</div>
+      <div class="screen-sub">Sign in to your account</div>
+      <div class="social-btns">
+        <div class="social-btn" onclick="socialLogin('Google')">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </div>
+        <div class="social-btn" onclick="socialLogin('Apple')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.15-2.19 1.28-2.17 3.81.03 3.02 2.65 4.03 2.68 4.04l-.06.23zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Apple
+        </div>
+      </div>
+      <div class="divider"><div class="div-line"></div><div class="div-text">or continue with email</div><div class="div-line"></div></div>
+      <div class="field"><label>Email or mobile</label><input class="inp" type="text" placeholder="Enter email or +91 number" id="login-email"/></div>
+      <div class="field">
+        <label>Password</label>
+        <div class="inp-wrap">
+          <input class="inp" type="password" placeholder="Enter password" id="login-pw" style="padding-right:40px"/>
+          <div class="inp-icon" onclick="togglePw('login-pw',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+      </div>
+      <div class="forgot" onclick="showScreen('forgot', document.querySelectorAll('.sw')[2])">Forgot password?</div>
+      <button class="submit-btn" onclick="doLogin()">Sign in</button>
+      <div class="switch-text">Don't have an account? <span onclick="showScreen('signup', document.querySelectorAll('.sw')[1])">Create one</span></div>
+    </div>`,
+
+  signup: () => signupStep === 1 ? `
+    <div class="screen">
+      <div class="brand">
+        <div class="brand-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00c985" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+        <div class="brand-name">Zentrade</div>
+      </div>
+      <div class="screen-title">Create account</div>
+      <div class="screen-sub">Start your investing journey</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="field"><label>First name</label><input class="inp" placeholder="Arjun"/></div>
+        <div class="field"><label>Last name</label><input class="inp" placeholder="Kumar"/></div>
+      </div>
+      <div class="field"><label>Email address</label><input class="inp" type="email" placeholder="arjun@email.com"/></div>
+      <div class="field"><label>Mobile number</label>
+        <div style="display:flex;gap:8px;">
+          <input class="inp" value="+91" style="width:56px;text-align:center;flex-shrink:0;" readonly/>
+          <input class="inp" type="tel" placeholder="00000 00000" style="flex:1;"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="inp-wrap">
+          <input class="inp" type="password" placeholder="Create strong password" id="signup-pw" oninput="checkStrength(this.value)" style="padding-right:40px"/>
+          <div class="inp-icon" onclick="togglePw('signup-pw',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+        <div class="strength-bar"><div class="sb" id="sb1"></div><div class="sb" id="sb2"></div><div class="sb" id="sb3"></div><div class="sb" id="sb4"></div></div>
+        <div class="strength-label" id="sl" style="color:#555;"></div>
+      </div>
+      <div class="terms">By creating an account you agree to our <span>Terms of Service</span> and <span>Privacy Policy</span></div>
+      <button class="submit-btn" onclick="signupStep=2;renderScreen('signup')">Continue</button>
+      <div class="switch-text">Already have an account? <span onclick="showScreen('login', document.querySelectorAll('.sw')[0])">Sign in</span></div>
+    </div>` : `
+    <div class="otp-screen">
+      <div class="otp-back" onclick="signupStep=1;renderScreen('signup')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </div>
+      <div class="otp-title">Verify your number</div>
+      <div class="otp-sub">We sent a 6-digit OTP to your mobile. Enter it below to verify your account.</div>
+      <div class="otp-inputs" id="otp-inputs">
+        <input class="otp-inp" maxlength="1" type="text"/>
+        <input class="otp-inp" maxlength="1" type="text"/>
+        <input class="otp-inp" maxlength="1" type="text"/>
+        <input class="otp-inp" maxlength="1" type="text"/>
+        <input class="otp-inp" maxlength="1" type="text"/>
+        <input class="otp-inp" maxlength="1" type="text"/>
+      </div>
+      <div class="resend-row">Didn't receive it? <span>Resend OTP</span></div>
+      <button class="submit-btn" onclick="signupStep=3;renderScreen('signup')">Verify & create account</button>
+    </div>`,
+
+  forgot: () => `
+    <div class="screen">
+      <div class="brand">
+        <div class="brand-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00c985" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      </div>
+      <div class="screen-title">Reset password</div>
+      <div class="screen-sub">Enter your email and we'll send a reset link</div>
+      <div class="field"><label>Email address</label><input class="inp" type="email" placeholder="your@email.com" id="reset-email"/></div>
+      <button class="submit-btn" onclick="doReset()">Send reset link</button>
+      <div class="switch-text"><span onclick="showScreen('login', document.querySelectorAll('.sw')[0])">Back to sign in</span></div>
+    </div>`,
+
+  success: () => `
+    <div class="success-wrap">
+      <div class="success-circle"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00c985" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="success-title" id="success-title">Account created!</div>
+      <div class="success-sub" id="success-sub">Welcome to Zentrade. Your account is ready. Complete KYC to start trading.</div>
+      <button class="submit-btn" onclick="sendPrompt('How do I implement JWT authentication for my broker app login system?')">Learn how to build auth backend ↗</button>
+    </div>`
+};
+
+function renderScreen(name) {
+  document.getElementById('screen-body').innerHTML = screens[name]();
+  setupOtp();
+}
+
+function showScreen(name, el) {
+  document.querySelectorAll('.sw').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  signupStep = 1;
+  renderScreen(name);
+}
+
+function togglePw(id, el) {
+  const inp = document.getElementById(id);
+  if(inp) { inp.type = inp.type==='password' ? 'text' : 'password'; }
+}
+
+function checkStrength(val) {
+  let score = 0;
+  if(val.length>=8) score++;
+  if(/[A-Z]/.test(val)) score++;
+  if(/[0-9]/.test(val)) score++;
+  if(/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#ff4d4d','#EF9F27','#378ADD','#00c985'];
+  const labels = ['Weak','Fair','Good','Strong'];
+  for(let i=1;i<=4;i++){
+    const el = document.getElementById('sb'+i);
+    if(el) el.style.background = i<=score ? colors[score-1] : '#1a1a1a';
+  }
+  const sl = document.getElementById('sl');
+  if(sl) { sl.textContent = val ? labels[score-1]||'' : ''; sl.style.color = score>0?colors[score-1]:'#555'; }
+}
+
+function setupOtp() {
+  const inputs = document.querySelectorAll('.otp-inp');
+  inputs.forEach((inp,i) => {
+    inp.addEventListener('input', () => {
+      if(inp.value) { inp.classList.add('filled'); if(i<inputs.length-1) inputs[i+1].focus(); }
+      else inp.classList.remove('filled');
+    });
+    inp.addEventListener('keydown', e => { if(e.key==='Backspace'&&!inp.value&&i>0) inputs[i-1].focus(); });
+  });
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email');
+  const pw = document.getElementById('login-pw');
+  if(!email||!email.value){if(email){email.classList.add('error');} return;}
+  renderSuccessScreen('Welcome back!','You are now signed in to your Zentrade account.');
+}
+
+function doReset() {
+  const email = document.getElementById('reset-email');
+  if(!email||!email.value){if(email)email.classList.add('error');return;}
+  renderSuccessScreen('Reset link sent!','Check your email for a password reset link. It expires in 10 minutes.');
+}
+
+function renderSuccessScreen(title, sub) {
+  document.getElementById('screen-body').innerHTML = screens.success();
+  document.getElementById('success-title').textContent = title;
+  document.getElementById('success-sub').textContent = sub;
+}
+
+function socialLogin(provider) {
+  renderSuccessScreen('Signed in with '+provider+'!','You are now signed in to your Zentrade account.');
+}
+
+renderScreen('login');
+</script>

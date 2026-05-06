@@ -1,0 +1,221 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+.wrap{background:#0f0f0f;border-radius:12px;border:0.5px solid #222;font-family:var(--font-sans);color:#fff;overflow:hidden;}
+.header{padding:14px 20px;border-bottom:0.5px solid #222;display:flex;align-items:center;justify-content:space-between;}
+.title{font-size:15px;font-weight:500;}
+.filter-btn{padding:6px 12px;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;color:#aaa;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.tabs{display:flex;border-bottom:0.5px solid #222;background:#0f0f0f;}
+.tab{flex:1;padding:11px;text-align:center;font-size:13px;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.tab.active{color:#fff;border-bottom-color:#00c985;}
+.summary-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;border-bottom:0.5px solid #1a1a1a;}
+.sum-item{background:#0f0f0f;padding:10px 14px;}
+.sum-label{font-size:10px;color:#555;margin-bottom:3px;}
+.sum-value{font-size:13px;font-weight:500;}
+.search-bar{padding:10px 20px;border-bottom:0.5px solid #1a1a1a;display:flex;align-items:center;gap:8px;}
+.search-input{flex:1;background:#141414;border:0.5px solid #2a2a2a;border-radius:8px;padding:8px 14px;color:#fff;font-size:13px;font-family:var(--font-sans);outline:none;}
+.search-input::placeholder{color:#444;}
+.filter-chips{display:flex;gap:6px;padding:10px 20px;border-bottom:0.5px solid #1a1a1a;overflow-x:auto;}
+.chip{padding:4px 12px;border-radius:20px;font-size:11px;cursor:pointer;border:0.5px solid #2a2a2a;background:#141414;color:#555;white-space:nowrap;transition:all 0.15s;}
+.chip.active{border-color:#378ADD;color:#378ADD;background:#378ADD15;}
+.orders-list{display:flex;flex-direction:column;}
+.order-row{padding:14px 20px;border-bottom:0.5px solid #1a1a1a;cursor:pointer;transition:background 0.1s;}
+.order-row:hover{background:#141414;}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.order-left{display:flex;align-items:center;gap:10px;}
+.order-badge{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;}
+.buy-badge{background:#1a3a5c;color:#378ADD;}
+.sell-badge{background:#3a1a1a;color:#ff6b6b;}
+.order-stock{font-size:13px;font-weight:500;}
+.order-meta{font-size:11px;color:#555;margin-top:2px;}
+.order-right{text-align:right;}
+.order-price{font-size:13px;font-weight:500;}
+.order-total{font-size:11px;color:#555;margin-top:2px;}
+.order-bottom{display:flex;justify-content:space-between;align-items:center;}
+.status-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:500;}
+.executed{background:#00c98520;color:#00c985;}
+.pending{background:#EF9F2715;color:#EF9F27;}
+.rejected{background:#ff4d4d15;color:#ff4d4d;}
+.cancelled{background:#33333390;color:#888;}
+.order-time{font-size:10px;color:#444;}
+.cancel-btn{font-size:10px;color:#ff4d4d;cursor:pointer;padding:3px 8px;border:0.5px solid #ff4d4d40;border-radius:6px;}
+.empty{padding:40px;text-align:center;color:#444;font-size:13px;}
+.detail-panel{background:#141414;border-top:0.5px solid #222;padding:16px 20px;display:none;}
+.detail-title{font-size:12px;color:#555;margin-bottom:12px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.detail-item .dl{font-size:10px;color:#555;margin-bottom:3px;}
+.detail-item .dv{font-size:12px;color:#aaa;}
+.action-row{display:flex;gap:8px;margin-top:14px;}
+.act-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;cursor:pointer;border:none;font-family:var(--font-sans);}
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="title">Orders</div>
+    <div class="filter-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      Filter
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="setTab('today',this)">Today</div>
+    <div class="tab" onclick="setTab('pending',this)">Pending</div>
+    <div class="tab" onclick="setTab('executed',this)">Executed</div>
+    <div class="tab" onclick="setTab('all',this)">All orders</div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="sum-item"><div class="sum-label">Total orders</div><div class="sum-value" id="s-total">8</div></div>
+    <div class="sum-item"><div class="sum-label">Executed</div><div class="sum-value" style="color:#00c985" id="s-exec">5</div></div>
+    <div class="sum-item"><div class="sum-label">Pending</div><div class="sum-value" style="color:#EF9F27" id="s-pend">2</div></div>
+    <div class="sum-item"><div class="sum-label">Rejected</div><div class="sum-value" style="color:#ff4d4d" id="s-rej">1</div></div>
+  </div>
+
+  <div class="search-bar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" placeholder="Search by stock name..." oninput="filterOrders(this.value)" id="search"/>
+  </div>
+
+  <div class="filter-chips">
+    <div class="chip active" onclick="filterChip('all',this)">All</div>
+    <div class="chip" onclick="filterChip('buy',this)">Buy</div>
+    <div class="chip" onclick="filterChip('sell',this)">Sell</div>
+    <div class="chip" onclick="filterChip('intraday',this)">Intraday</div>
+    <div class="chip" onclick="filterChip('delivery',this)">Delivery</div>
+  </div>
+
+  <div class="orders-list" id="orders-list"></div>
+
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-title">Order details</div>
+    <div class="detail-grid" id="detail-grid"></div>
+    <div class="action-row">
+      <button class="act-btn" style="background:#1a1a1a;color:#aaa;" onclick="closeDetail()">Close</button>
+      <button class="act-btn" style="background:#00c98520;color:#00c985;" onclick="sendPrompt('How do I implement modify order API using Upstox for my broker app?')">Modify order ↗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const allOrders = [
+  {id:'ORD001',stock:'TCS',type:'BUY',qty:5,price:3730,status:'executed',time:'09:32 AM',product:'Intraday',exchange:'NSE',orderType:'Market',avg:3728.5},
+  {id:'ORD002',stock:'RELIANCE',type:'BUY',qty:3,price:2847,status:'executed',time:'10:15 AM',product:'Delivery',exchange:'NSE',orderType:'Limit',avg:2845},
+  {id:'ORD003',stock:'INFY',type:'SELL',qty:10,price:1790,status:'pending',time:'11:02 AM',product:'Intraday',exchange:'NSE',orderType:'Limit',avg:0},
+  {id:'ORD004',stock:'HDFCBANK',type:'BUY',qty:8,price:1540,status:'executed',time:'11:45 AM',product:'Delivery',exchange:'NSE',orderType:'Market',avg:1539.5},
+  {id:'ORD005',stock:'WIPRO',type:'SELL',qty:20,price:480,status:'rejected',time:'12:10 PM',product:'Intraday',exchange:'NSE',orderType:'Market',avg:0},
+  {id:'ORD006',stock:'BAJFINANCE',type:'BUY',qty:2,price:6920,status:'pending',time:'01:30 PM',product:'Delivery',exchange:'NSE',orderType:'SL',avg:0},
+  {id:'ORD007',stock:'TATAMOTORS',type:'BUY',qty:15,price:912,status:'executed',time:'02:05 PM',product:'Intraday',exchange:'NSE',orderType:'Market',avg:911.2},
+  {id:'ORD008',stock:'NIFTY50',type:'SELL',qty:1,price:22419,status:'executed',time:'03:20 PM',product:'Intraday',exchange:'NFO',orderType:'Market',avg:22415},
+];
+
+let currentTab = 'today';
+let currentChip = 'all';
+let searchVal = '';
+
+function getFiltered() {
+  return allOrders.filter(o => {
+    if(currentTab==='pending' && o.status!=='pending') return false;
+    if(currentTab==='executed' && o.status!=='executed') return false;
+    if(currentChip==='buy' && o.type!=='BUY') return false;
+    if(currentChip==='sell' && o.type!=='SELL') return false;
+    if(currentChip==='intraday' && o.product!=='Intraday') return false;
+    if(currentChip==='delivery' && o.product!=='Delivery') return false;
+    if(searchVal && !o.stock.toLowerCase().includes(searchVal.toLowerCase())) return false;
+    return true;
+  });
+}
+
+function render() {
+  const orders = getFiltered();
+  const list = document.getElementById('orders-list');
+  if(!orders.length){list.innerHTML='<div class="empty">No orders found</div>';return;}
+  list.innerHTML = orders.map(o => {
+    const total = (o.qty * o.price).toLocaleString('en-IN');
+    const statusClass = {executed:'executed',pending:'pending',rejected:'rejected',cancelled:'cancelled'}[o.status];
+    const statusLabel = o.status.charAt(0).toUpperCase()+o.status.slice(1);
+    const showCancel = o.status==='pending';
+    return `<div class="order-row" onclick="showDetail('${o.id}')">
+      <div class="order-top">
+        <div class="order-left">
+          <div class="order-badge ${o.type==='BUY'?'buy-badge':'sell-badge'}">${o.type}</div>
+          <div>
+            <div class="order-stock">${o.stock}</div>
+            <div class="order-meta">${o.qty} shares · ${o.product} · ${o.exchange}</div>
+          </div>
+        </div>
+        <div class="order-right">
+          <div class="order-price">₹${o.price.toLocaleString('en-IN')}</div>
+          <div class="order-total">₹${total}</div>
+        </div>
+      </div>
+      <div class="order-bottom">
+        <span class="status-badge ${statusClass}">${statusLabel}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${showCancel?`<span class="cancel-btn" onclick="event.stopPropagation();cancelOrder('${o.id}')">Cancel</span>`:''}
+          <span class="order-time">${o.time}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const exec = allOrders.filter(o=>o.status==='executed').length;
+  const pend = allOrders.filter(o=>o.status==='pending').length;
+  const rej = allOrders.filter(o=>o.status==='rejected').length;
+  document.getElementById('s-total').textContent = allOrders.length;
+  document.getElementById('s-exec').textContent = exec;
+  document.getElementById('s-pend').textContent = pend;
+  document.getElementById('s-rej').textContent = rej;
+}
+
+function setTab(t, el) {
+  currentTab = t;
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  closeDetail();
+  render();
+}
+
+function filterChip(c, el) {
+  currentChip = c;
+  document.querySelectorAll('.chip').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function filterOrders(v) {
+  searchVal = v;
+  render();
+}
+
+function cancelOrder(id) {
+  const o = allOrders.find(x=>x.id===id);
+  if(o) o.status='cancelled';
+  render();
+}
+
+function showDetail(id) {
+  const o = allOrders.find(x=>x.id===id);
+  if(!o) return;
+  const panel = document.getElementById('detail-panel');
+  panel.style.display = 'block';
+  document.getElementById('detail-grid').innerHTML = [
+    {l:'Order ID',v:o.id},
+    {l:'Exchange',v:o.exchange},
+    {l:'Order type',v:o.orderType},
+    {l:'Product',v:o.product},
+    {l:'Quantity',v:o.qty+' shares'},
+    {l:'Price',v:'₹'+o.price.toLocaleString('en-IN')},
+    {l:'Avg. price',v:o.avg?'₹'+o.avg.toFixed(2):'-'},
+    {l:'Status',v:o.status.charAt(0).toUpperCase()+o.status.slice(1)},
+    {l:'Time',v:o.time},
+    {l:'Total value',v:'₹'+(o.qty*o.price).toLocaleString('en-IN')},
+  ].map(i=>`<div class="detail-item"><div class="dl">${i.l}</div><div class="dv">${i.v}</div></div>`).join('');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').style.display='none';
+}
+
+render();
+</script>
